@@ -1,21 +1,15 @@
 import youtubeDlExec, { download } from "@distube/youtube-dl";
-import { ExtractorPlugin, Playlist, Song } from "distube";
+import { DisTubeError, ExtractorPlugin, Playlist, Song } from "distube";
 import type { OtherSongInfo } from "distube";
 import type { GuildMember } from "discord.js";
 import type { YtResponse } from "@distube/youtube-dl";
 
-export class YouTubeDLPlugin extends ExtractorPlugin {
-  constructor(updateYouTubeDL = true) {
+export class YtDlpPlugin extends ExtractorPlugin {
+  constructor() {
     super();
-    if (updateYouTubeDL) {
-      /* eslint-disable no-console */
-      download()
-        .then((version: any) => console.log(`[DisTube] Updated youtube-dl to ${version}!`))
-        .catch(console.error)
-        .catch(() => console.warn("[DisTube] Unable to update youtube-dl, using default version."));
-      /* eslint-enable no-console */
-    }
+    download().catch(() => undefined);
   }
+
   // eslint-disable-next-line @typescript-eslint/require-await
   async validate() {
     return true;
@@ -28,7 +22,7 @@ export class YouTubeDLPlugin extends ExtractorPlugin {
       noCallHome: true,
       preferFreeFormats: true,
     }).catch(e => {
-      throw new Error(`[youtube-dl] ${e.stderr || e}`);
+      throw new DisTubeError("YTDLP_ERROR", `${e.stderr || e}`);
     });
     if (Array.isArray(info.entries) && info.entries.length > 0) {
       info.source = info.extractor.match(/\w+/)[0];
@@ -46,8 +40,10 @@ export class YouTubeDLPlugin extends ExtractorPlugin {
       noCallHome: true,
       preferFreeFormats: true,
     }).catch(e => {
-      throw new Error(`[youtube-dl] ${e.stderr || e}`);
+      throw new DisTubeError("YTDLP_ERROR", `${e.stderr || e}`);
     });
     return info.url;
   }
 }
+
+export const YouTubeDLPlugin = YtDlpPlugin;
