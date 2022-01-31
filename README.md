@@ -39,6 +39,7 @@ const client = new Discord.Client();
 const { DisTube } = require("distube");
 const { YtDlpPlugin } = require("@distube/yt-dlp");
 const distube = new DisTube(client, {
+  youtubeDL: false,
   plugins: [new YtDlpPlugin()],
 });
 ```
