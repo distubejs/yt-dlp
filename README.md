@@ -18,6 +18,10 @@
 
 - Support [700+ sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) using [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 
+# Requirement
+
+- [python](https://www.python.org/)
+
 # Installation
 
 ```sh

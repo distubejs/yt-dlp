@@ -1,4 +1,4 @@
-import youtubeDlExec, { download } from "@distube/youtube-dl";
+import { download, json } from "./wrapper";
 import { DisTubeError, ExtractorPlugin, Playlist, Song } from "distube";
 import type { OtherSongInfo } from "distube";
 import type { GuildMember } from "discord.js";
@@ -10,17 +10,18 @@ export class YtDlpPlugin extends ExtractorPlugin {
     download().catch(() => undefined);
   }
 
-  // eslint-disable-next-line @typescript-eslint/require-await
-  async validate() {
+  validate() {
     return true;
   }
 
   async resolve(url: string, { member, metadata }: { member?: GuildMember; metadata?: any }) {
-    const info: any = await youtubeDlExec(url, {
+    const info: any = await json(url, {
       dumpSingleJson: true,
       noWarnings: true,
       noCallHome: true,
       preferFreeFormats: true,
+      skipDownload: true,
+      simulate: true,
     }).catch(e => {
       throw new DisTubeError("YTDLP_ERROR", `${e.stderr || e}`);
     });
@@ -33,17 +34,19 @@ export class YtDlpPlugin extends ExtractorPlugin {
     }
     return new Song(info, { member, source: info.extractor, metadata });
   }
+
   async getStreamURL(url: string) {
-    const info = await youtubeDlExec(url, {
+    const info = await json(url, {
       dumpSingleJson: true,
       noWarnings: true,
       noCallHome: true,
       preferFreeFormats: true,
+      skipDownload: true,
+      simulate: true,
+      format: "ba/ba*",
     }).catch(e => {
       throw new DisTubeError("YTDLP_ERROR", `${e.stderr || e}`);
     });
     return info.url;
   }
 }
-
-export const YouTubeDLPlugin = YtDlpPlugin;
