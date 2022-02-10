@@ -1,8 +1,10 @@
 import { download, json } from "./wrapper";
 import { DisTubeError, ExtractorPlugin, Playlist, Song } from "distube";
-import type { OtherSongInfo } from "distube";
+import type { YtDlpPlaylist } from "./type";
+import type { PlaylistInfo } from "distube";
 import type { GuildMember } from "discord.js";
-import type { YtResponse } from "@distube/youtube-dl";
+
+const isPlaylist = (i: any): i is YtDlpPlaylist => Array.isArray(i.entries);
 
 export class YtDlpPlugin extends ExtractorPlugin {
   constructor() {
@@ -14,8 +16,8 @@ export class YtDlpPlugin extends ExtractorPlugin {
     return true;
   }
 
-  async resolve(url: string, { member, metadata }: { member?: GuildMember; metadata?: any }) {
-    const info: any = await json(url, {
+  async resolve<T>(url: string, { member, metadata }: { member?: GuildMember; metadata?: T }) {
+    const info = await json(url, {
       dumpSingleJson: true,
       noWarnings: true,
       noCallHome: true,
@@ -25,12 +27,14 @@ export class YtDlpPlugin extends ExtractorPlugin {
     }).catch(e => {
       throw new DisTubeError("YTDLP_ERROR", `${e.stderr || e}`);
     });
-    if (Array.isArray(info.entries) && info.entries.length > 0) {
-      info.source = info.extractor.match(/\w+/)[0];
-      info.songs = info.entries.map(
-        (i: OtherSongInfo & YtResponse) => new Song(i, { member, source: i.extractor, metadata }),
-      );
-      return new Playlist(info, { member, metadata, properties: { source: info.songs[0]?.source } });
+    if (isPlaylist(info)) {
+      if (info.entries.length === 0) throw new DisTubeError("YTDLP_ERROR", "The playlist is empty");
+      const playlist: PlaylistInfo = {
+        ...info,
+        source: info.extractor,
+        songs: info.entries.map(i => new Song(i, { member, source: i.extractor, metadata })),
+      };
+      return new Playlist(playlist, { member, metadata });
     }
     return new Song(info, { member, source: info.extractor, metadata });
   }
@@ -47,6 +51,7 @@ export class YtDlpPlugin extends ExtractorPlugin {
     }).catch(e => {
       throw new DisTubeError("YTDLP_ERROR", `${e.stderr || e}`);
     });
+    if (isPlaylist(info)) throw new DisTubeError("YTDLP_ERROR", "Cannot get stream URL of a entire playlist");
     return info.url;
   }
 }

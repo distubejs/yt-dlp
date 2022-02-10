@@ -222,6 +222,7 @@ export interface YtDlpThumbnail {
   id: string;
   height?: number;
   width?: number;
+  resolution?: string;
 }
 
 export interface YtDlpCaption {
@@ -230,7 +231,7 @@ export interface YtDlpCaption {
   name: string;
 }
 
-export interface YtDlpResponse {
+export interface YtDlpVideo {
   id: string;
   title: string;
   fulltitle: string;
@@ -314,7 +315,7 @@ export interface YtDlpResponse {
   tags: string[];
   automatic_captions: Record<string, YtDlpCaption[]>;
   subtitles: unknown;
-  chapters: unknown;
+  chapters: any[];
   requested_subtitles: unknown;
   __has_drm: boolean;
   requested_downloads: unknown[];
@@ -328,5 +329,35 @@ export interface YtDlpResponse {
   audio_ext: string;
   video_ext: string;
   http_headers: unknown;
-  [x: string]: unknown;
+  _last_playlist_index: number;
+  requested_formats: unknown[];
+  stretched_ratio: unknown;
 }
+
+export interface YtDlpPlaylist {
+  uploader: string;
+  uploader_id: string;
+  uploader_url: string;
+  thumbnails: YtDlpThumbnail[];
+  tags: string[];
+  view_count: number;
+  modified_date: string;
+  playlist_count: number;
+  channel_follower_count: number | null;
+  channel: string;
+  channel_id: string;
+  channel_url: string;
+  id: string;
+  title: string;
+  description: string;
+  entries: YtDlpVideo[];
+  original_url: string;
+  webpage_url: string;
+  webpage_url_basename: string;
+  webpage_url_domain: string;
+  extractor: string;
+  extractor_key: string;
+  epoch: number;
+}
+
+export type YtDlpResponse = YtDlpVideo | YtDlpPlaylist;
