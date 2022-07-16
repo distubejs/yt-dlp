@@ -12,7 +12,7 @@ const makeRequest = async (url: string): Promise<Dispatcher.ResponseData> => {
   if (response.statusCode.toString().startsWith("3")) {
     if (!response.headers.location) throw new Error(`Cannot redirect to '${url}'`);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    for await (const chunk of response.body) {
+    for await (const _chunk of response.body) {
       // force consumption of body
     }
     return makeRequest(response.headers.location);

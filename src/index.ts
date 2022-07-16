@@ -12,7 +12,7 @@ export class YtDlpPlugin extends ExtractorPlugin {
     if (update) download().catch(() => undefined);
   }
 
-  validate() {
+  override validate() {
     return true;
   }
 
@@ -39,7 +39,7 @@ export class YtDlpPlugin extends ExtractorPlugin {
     return new Song(info, { member, source: info.extractor, metadata });
   }
 
-  async getStreamURL(url: string) {
+  override async getStreamURL(url: string) {
     const info = await json(url, {
       dumpSingleJson: true,
       noWarnings: true,
@@ -55,3 +55,5 @@ export class YtDlpPlugin extends ExtractorPlugin {
     return info.url;
   }
 }
+
+export * from "./wrapper";
