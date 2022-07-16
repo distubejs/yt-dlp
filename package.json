@@ -7,14 +7,14 @@
   "scripts": {
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "prettier": "prettier --write **/*.{js,ts,json,yml,yaml,md}",
+    "prettier": "prettier --write \"**/*.{ts,json,yml,yaml,md}\"",
     "build": "tsc",
     "build:check": "tsc --noEmit --incremental false",
     "npm:publish": "npm publish --access public",
     "postinstall:prod": "node script/download",
     "postinstall": "npm run build && node script/download && husky install",
-    "prepublishOnly": "node script/prepublishOnly.dev",
-    "postpublish": "node script/postpublish.dev"
+    "prepack": "node script/prepack",
+    "postpack": "node script/postpack"
   },
   "repository": {
     "type": "git",
