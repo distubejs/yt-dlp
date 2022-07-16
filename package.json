@@ -10,7 +10,6 @@
     "prettier": "prettier --write \"**/*.{ts,json,yml,yaml,md}\"",
     "build": "tsup",
     "build:check": "tsc --noEmit --incremental false",
-    "npm:publish": "npm publish --access public",
     "postinstall:prod": "node script/download",
     "postinstall": "npm run build && node script/download && husky install",
     "prepack": "yarn build && node script/prepack",
