@@ -38,7 +38,7 @@
     "dargs": "^7.0.0",
     "execa": "^5.1.1",
     "mkdirp": "^1.0.4",
-    "petitio": "^1.4.0"
+    "undici": "^5.7.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^16.1.0",

@@ -1,15 +1,22 @@
 import dargs from "dargs";
 import execa from "execa";
 import mkdirp from "mkdirp";
-import petitio from "petitio";
 import fs from "node:fs/promises";
+import { type Dispatcher, request } from "undici";
 import { YTDLP_DIR, YTDLP_FILENAME, YTDLP_PATH, YTDLP_URL } from "./env";
 import type { YtDlpFlags, YtDlpResponse } from "./type";
 
-const makeRequest = async (url: string): Promise<petitio.PetitioResponse> => {
-  const response = await petitio(url).header({ "user-agent": "distube" }).send();
+const makeRequest = async (url: string): Promise<Dispatcher.ResponseData> => {
+  const response = await request(url, { headers: { "user-agent": "distube" } });
   if (!response.statusCode) throw new Error(`Cannot make requests to '${url}'`);
-  if (response.statusCode.toString().startsWith("3")) return makeRequest(response.headers.location);
+  if (response.statusCode.toString().startsWith("3")) {
+    if (!response.headers.location) throw new Error(`Cannot redirect to '${url}'`);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    for await (const chunk of response.body) {
+      // force consumption of body
+    }
+    return makeRequest(response.headers.location);
+  }
   if (response.statusCode.toString().startsWith("2")) return response;
   throw new Error(`${url}\nStatus code ${response.statusCode.toString()}`);
 };
@@ -27,18 +34,18 @@ const getBinary = async (url: string) => {
   const response = await makeRequest(url);
   const contentType = response.headers["content-type"];
 
-  if (binContentTypes.includes(contentType)) return { buffer: response.body, version: "N/A" };
+  if (binContentTypes.includes(contentType ?? "")) return { buffer: await response.body.arrayBuffer(), version: "N/A" };
 
-  const [{ assets, tag_name }] = response.json();
+  const [{ assets, tag_name }] = await response.body.json();
   const { browser_download_url } = assets.find(({ name }: { name: string }) => name === YTDLP_FILENAME);
-  return makeRequest(browser_download_url).then(r => ({
-    buffer: r.body,
+  return await makeRequest(browser_download_url).then(async r => ({
+    buffer: await r.body.arrayBuffer(),
     version: typeof tag_name === "string" ? tag_name : "N/A",
   }));
 };
 
 export const download = () =>
   Promise.all([getBinary(YTDLP_URL), mkdirp(YTDLP_DIR)]).then(([{ buffer, version }]) => {
-    fs.writeFile(YTDLP_PATH, buffer, { mode: 493 });
+    fs.writeFile(YTDLP_PATH, Buffer.from(buffer), { mode: 493 });
     return version;
   });
