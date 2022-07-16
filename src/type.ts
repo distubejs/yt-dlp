@@ -361,3 +361,7 @@ export interface YtDlpPlaylist {
 }
 
 export type YtDlpResponse = YtDlpVideo | YtDlpPlaylist;
+
+export interface YtDlpOptions {
+  update?: boolean;
+}

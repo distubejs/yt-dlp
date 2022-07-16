@@ -16,7 +16,7 @@
 
 # Feature
 
-- Support [700+ sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) using [yt-dlp](https://github.com/yt-dlp/yt-dlp)
+- Support [900+ sites](https://github.com/yt-dlp/yt-dlp/blob/master/supportedsites.md) using [yt-dlp](https://github.com/yt-dlp/yt-dlp)
 
 # Requirement
 
@@ -30,9 +30,11 @@ npm install @distube/yt-dlp@latest
 
 # Documentation
 
-### new YtDlpPlugin()
+### new YtDlpPlugin([YtDlpPluginOptions])
 
-Create a DisTube's `ExtractorPlugin`
+Create a DisTube's `ExtractorPlugin` instance.
+
+- `YtDlpPluginOptions.update` (`boolean`): Default is `true`. Update the yt-dlp binary when the plugin is initialized.
 
 # Usage
 
@@ -43,7 +45,6 @@ const client = new Discord.Client();
 const { DisTube } = require("distube");
 const { YtDlpPlugin } = require("@distube/yt-dlp");
 const distube = new DisTube(client, {
-  youtubeDL: false,
-  plugins: [new YtDlpPlugin()],
+  plugins: [new YtDlpPlugin({ update: true })],
 });
 ```

@@ -1,15 +1,15 @@
 import { download, json } from "./wrapper";
 import { DisTubeError, ExtractorPlugin, Playlist, Song } from "distube";
-import type { YtDlpPlaylist } from "./type";
+import type { YtDlpOptions, YtDlpPlaylist } from "./type";
 import type { PlaylistInfo } from "distube";
 import type { GuildMember } from "discord.js";
 
 const isPlaylist = (i: any): i is YtDlpPlaylist => Array.isArray(i.entries);
 
 export class YtDlpPlugin extends ExtractorPlugin {
-  constructor() {
+  constructor({ update }: YtDlpOptions) {
     super();
-    download().catch(() => undefined);
+    if (update) download().catch(() => undefined);
   }
 
   validate() {
