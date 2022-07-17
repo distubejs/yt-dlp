@@ -7,7 +7,7 @@ import type { GuildMember } from "discord.js";
 const isPlaylist = (i: any): i is YtDlpPlaylist => Array.isArray(i.entries);
 
 export class YtDlpPlugin extends ExtractorPlugin {
-  constructor({ update }: YtDlpOptions) {
+  constructor({ update }: YtDlpOptions = {}) {
     super();
     if (update) download().catch(() => undefined);
   }
