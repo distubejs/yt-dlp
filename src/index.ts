@@ -9,7 +9,7 @@ const isPlaylist = (i: any): i is YtDlpPlaylist => Array.isArray(i.entries);
 export class YtDlpPlugin extends ExtractorPlugin {
   constructor({ update }: YtDlpOptions = {}) {
     super();
-    if (update) download().catch(() => undefined);
+    if (update ?? true) download().catch(() => undefined);
   }
 
   override validate() {
